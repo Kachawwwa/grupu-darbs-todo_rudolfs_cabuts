@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-  <!--Pirmais autors ir: Rudolfs Čabuts un otrais autors ir: Andrejs Šorecs Darbs V2-->
 <html lang="lv">
+    <!--Pirmais autors ir: Rudolfs Čabuts un otrais autors ir: Andrejs Šorecs Darbs V2-->
 <head>
   <meta charset="UTF-8">
   <title>Todo List</title>
@@ -13,7 +13,12 @@
   <h2 class="text-center mb-4">Todo List</h2>
 
   <div class="input-group mb-3">
-    <input type="text" id="taskInput" class="form-control" placeholder="Ievadi uzdevumu">
+    <select class="form-select"  name="prioritates" id="grutiba">
+        <option value="Zema">Zema</option>
+        <option value="Videja">Videja</option>
+        <option value="Svariga">Svariga!</option>
+    </select>
+    <input type="text" id="taskInput" class="form-control w-75" placeholder="Ievadi uzdevumu">
     <button class="btn btn-primary" onclick="addTask()">Pievienot</button>
   </div>
 
@@ -21,7 +26,19 @@
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", loadTasks);
+ // document.addEventListener("DOMContentLoaded");
+  
+  // LocalStorage data ieladesana
+    loadData();
+    function loadData() {
+        let text = localStorage.getItem("Jons");
+        let obj = JSON.parse(text);
+        console.log(obj);
+        obj.forEach(objekts => {
+            createTaskElement(objekts);
+        });
+    }
+
 
   function addTask() {
     const input = document.getElementById("taskInput");
@@ -35,7 +52,9 @@
     createTaskElement(taskText);
     saveTasks();
     input.value = "";
+   
   }
+
 
   function createTaskElement(text) {
     const li = document.createElement("li");
@@ -43,13 +62,35 @@
 
     const span = document.createElement("span");
     span.textContent = text;
-
+    
+    //Izveidots grutibas limena raditajs uzdevuma kreisaja puse
+    let prioritatepoga = document.createElement("button");
+    li.appendChild(prioritatepoga);
+    prioritatepoga.textContent=document.getElementById("grutiba").value;
+    
+    //parbaudes lai piskirtu pareizajam grutibas limeni pareizo raditaju
+    if(document.getElementById("grutiba").value == "Zema"){
+        prioritatepoga.className= "btn btn-secondary";
+    }
+    if (document.getElementById("grutiba").value == "Videja") {
+        prioritatepoga.className= "btn btn-warning";
+    }
+    if (document.getElementById("grutiba").value == "Svariga"){
+        prioritatepoga.className= "btn btn-danger";
+    }
+    
+    if (span.className == "text-decoration-line-through"){
+        let workdone=span;
+        console.log("HEllo world!");
+    }
+    
     <!--Funkcija kas pievieno tesktam no ievades iespeju parvesrt vinu svitrainu un citada dizaina-->
     span.onclick = function (){
         span.classList.toggle("text-decoration-line-through");
         span.classList.toggle("text-muted");
-    }
-
+        saveTasks();
+    };
+    
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Dzēst";
     deleteBtn.className = "btn btn-danger btn-sm";
@@ -61,16 +102,23 @@
 
     li.appendChild(span);
     li.appendChild(deleteBtn);
-    document.getElementById("taskList").appendChild(li);
+    document.getElementById("taskList").appendChild(li); 
   }
 
   function saveTasks() {
-    const tasks = [];
+    var tasks = [];
     document.querySelectorAll("#taskList li span").forEach(task => {
       tasks.push(task.textContent);
     });
+    SaveData(tasks);
   
   }
+  // Saglaba datus no ievades
+    function SaveData(tasks){
+        console.log(tasks);
+        const myJson = JSON.stringify(tasks);
+        localStorage.setItem("Jons",myJson);
+    }
 
   
 </script>
